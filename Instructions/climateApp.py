@@ -68,12 +68,56 @@ def precipitaion():
 @app.route("/api/v1.0/stations")
 def stations():
     # DEsign a query to show all the stationis available in the dataset
-    results = session.query(Station.station).all()
+    results = session.query(Station.station, Station.name).all()
 
     stations = list(np.ravel(results))
 
     session.close()
     return jsonify(stations)
+
+
+@app.route("/api/v1.0/tobs")
+def tobs():
+    
+    previous = dt.date(2017, 8, 23) - dt.timedelta(days=365)
+    # pre_previous = previous - dt.timedelta(days=365)
+    
+    results = session.query(Measurement.date, Measurement.tobs).\
+            filter(Measurement.date>=previous).filter(Measurement.station=='USC00519281').all()
+
+    
+    #dictionary with the date as the key and the precipitation as the value
+    tobs = {date: tobs for date, tobs in results}
+
+
+    session.close()
+    return jsonify(tobs)
+
+@app.route("/api/v1.0/<start>")
+def start(start):
+    
+    trip_data = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+                filter(Measurement.date >= '2010-08-23').all()
+
+   
+    start = list(np.ravel(trip_data))
+    
+    session.close()
+    return jsonify(start)
+
+
+
+@app.route("/api/v1.0/<start>-<end>")
+def start_end(start, end):
+    
+    trip_data1 = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+                filter(Measurement.date >= '2017-08-01', Measurement.date <= '2017-08-31').all()
+
+   
+    start1 = list(np.ravel(trip_data1))
+    
+    session.close()
+    return jsonify(start1)
 
 
     
