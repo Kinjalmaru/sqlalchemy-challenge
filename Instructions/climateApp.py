@@ -97,7 +97,7 @@ def tobs():
 def start(start):
     
     trip_data = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-                filter(Measurement.date >= '2010-08-23').all()
+                filter(Measurement.date >= start).all()
 
    
     start = list(np.ravel(trip_data))
@@ -111,7 +111,7 @@ def start(start):
 def start_end(start, end):
     
     trip_data1 = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-                filter(Measurement.date >= '2017-08-01', Measurement.date <= '2017-08-31').all()
+                filter(Measurement.date >= start, Measurement.date <= end).all()
 
    
     start1 = list(np.ravel(trip_data1))
